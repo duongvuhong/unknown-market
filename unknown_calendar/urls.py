@@ -15,9 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from django.urls.conf import include
+
+from . import views
+
+app_name = 'unknown_calendar'
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
-    path('', include('unknown_calendar.urls'))
+    path('', views.CalendarView.as_view(), name='unknown_calendar'),
+    path('authorize', views.google_authorize, name='google_authorize'),
+    path('oauth2callback', views.oauth2callback, name='oauth2callback'),
+    path('events', views.calendar_events, name='calendar_events')
 ]

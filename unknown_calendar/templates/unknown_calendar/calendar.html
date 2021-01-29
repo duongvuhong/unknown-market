@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <!-- Required meta tags -->
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Django Calendar App</title>
+</head>
+<body>
+  {% block content %}
+  {{ calendar }}
+  {{ events.0.summary }}
+  {% endblock %}
+  <p>
+    {% if not credentials %}
+    <a href="{% url 'unknown_calendar:google_authorize' %}">Login</a>
+    {% else %}
+    <p>Hello, {{ user }}</p>
+    {% endif %}
+  </p>
+</body>
+
+</html>
