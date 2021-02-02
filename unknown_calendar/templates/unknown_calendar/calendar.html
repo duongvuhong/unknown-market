@@ -1,24 +1,24 @@
+{% load static %}
+{% load socialaccount %}
+
 <!doctype html>
 <html lang="en">
-
 <head>
   <!-- Required meta tags -->
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Django Calendar App</title>
+  <link rel="stylesheet" type="text/css" href="{% static 'unknown_calendar/styles.css' %}">
+  <title>Unknown Market</title>
 </head>
-<body>
-  {% block content %}
-  {{ calendar }}
-  {{ events.0.summary }}
-  {% endblock %}
-  <p>
-    {% if not credentials %}
-    <a href="{% url 'unknown_calendar:google_authorize' %}">Login</a>
-    {% else %}
-    <p>Hello, {{ user }}</p>
-    {% endif %}
-  </p>
-</body>
 
+<body>
+  <h1>Calendar, 
+    {% if user.is_authenticated %}
+      {{ user.username }}
+    {% else %}
+      <a href="{% provider_login_url 'google' %}">Login With Google</a>
+    {% endif %}
+  </h1>
+  {{ calendar }}
+</body>
 </html>

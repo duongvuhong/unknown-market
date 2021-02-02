@@ -1,15 +1,12 @@
 import os
-import datetime
-from calendar import HTMLCalendar
 
-from django.shortcuts import render
 from django.http import HttpResponseRedirect
 from django.views import generic
 from django.utils.safestring import mark_safe
 import google_auth_oauthlib.flow
-from googleapiclient.discovery import build
 
 from .models import CalendarEvent
+from .calendar import Calendar
 
 SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 google_credentials = None
@@ -22,30 +19,11 @@ class CalendarView(generic.ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
 
-        cal = HTMLCalendar().formatmonth(2021, 12)
-        context['calendar'] = mark_safe(cal)
+        cal = Calendar(2021, 2)
+        html_cal = cal.formatmonth(withyear=True)
+        context['calendar'] = mark_safe(html_cal)
 
         return context
-
-
-def calendar_events(request):
-    if google_credentials:
-        service = build('calendar', 'v3', credentials=google_credentials)
-
-        # Call the Calendar API
-        now = datetime.datetime.utcnow().isoformat() + 'Z' # 'Z' indicates UTC time
-        print('Getting the upcoming 10 events')
-        events_result = service.events().list(calendarId='primary', timeMin=now,
-                                            maxResults=10, singleEvents=True,
-                                            orderBy='startTime').execute()
-        events = events_result.get('items', [])
-        if not events:
-            events = 'No upcoming events found'
-
-        context = {}
-        context['events'] = events
-
-        return render(request, 'unknown_calendar/calendar.html', context)
 
 
 def google_authorize(request):
@@ -77,24 +55,14 @@ def oauth2callback(request):
     code = request.GET.get('code')
     flow.fetch_token(code=code)
 
-    # Store credentials in the session.
-    # ACTION ITEM: In a production app, you likely want to save these
-    #              credentials in a persistent database instead.
+    # TODO: likely save these credentials in a persistent database instead.
     global google_credentials
     google_credentials = flow.credentials
-    request.session['credentials'] = credentials_to_dict(google_credentials)
 
-    return HttpResponseRedirect('/events')
-
-def clear_credentials(request):
-    if 'credentials' in request.session:
-        del request.session['credentials']
-    return ('Credentials have been cleared.<br><br>')
-
-def credentials_to_dict(credentials):
-    return {'token': credentials.token,
-          'refresh_token': credentials.refresh_token,
-          'token_uri': credentials.token_uri,
-          'client_id': credentials.client_id,
-          'client_secret': credentials.client_secret,
-          'scopes': credentials.scopes}
+    print({'token': google_credentials.token,
+    'refresh_token': google_credentials.refresh_token,
+    'token_uri': google_credentials.token_uri,
+    'client_id': google_credentials.client_id,
+    'client_secret': google_credentials.client_secret,
+    'scopes': google_credentials.scopes})
+    return HttpResponseRedirect('/')

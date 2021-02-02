@@ -24,5 +24,4 @@ urlpatterns = [
     path('', views.CalendarView.as_view(), name='unknown_calendar'),
     path('authorize', views.google_authorize, name='google_authorize'),
     path('oauth2callback', views.oauth2callback, name='oauth2callback'),
-    path('events', views.calendar_events, name='calendar_events')
 ]
