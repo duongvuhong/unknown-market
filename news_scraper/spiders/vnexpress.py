@@ -13,7 +13,6 @@ class VnexpressSpider(scrapy.Spider):
 
     def start_requests(self):
         for url in self.start_urls:
-            self.quota = 2
             yield scrapy.Request(url=url, callback=self.parse)
 
     def parse(self, response):
@@ -36,13 +35,15 @@ class VnexpressSpider(scrapy.Spider):
             yield self.parse_article(article)
 
     def parse_article(self, article):
-        title_link = article.xpath('.//h2[@class="title-news"]/a')
-        description = article.xpath('.//p[@class="description"]/a')
+        picture = article.xpath('.//picture/source/img')
+        title_link = article.xpath('./h2[@class="title-news"]/a')
+        description = article.xpath('./p[@class="description"]/a')
 
         item = ArticleItem()
 
-        item['title']       = title_link.xpath("./text()").get()
-        item['url']         = title_link.xpath("./@href").get()
+        item['thumbnail']   = picture.xpath('./@data-src').get()
+        item['title']       = title_link.xpath('./text()').get()
+        item['url']         = title_link.xpath('./@href').get()
         item['description'] = ' '.join(description.xpath('./text()').getall())
 
         return item

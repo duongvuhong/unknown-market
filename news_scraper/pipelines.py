@@ -10,6 +10,5 @@ from itemadapter import ItemAdapter
 
 class NewsScraperPipeline(object):
     def process_item(self, item, spider):
-        print('CUNCON: saving items')
         item.save()
         return item

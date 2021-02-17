@@ -44,6 +44,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',
 
     # My apps
+    'main_app',
     'unknown_calendar',
     'unknown_news',
     'news_scraper'
