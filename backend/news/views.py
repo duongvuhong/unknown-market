@@ -1,23 +1,46 @@
-from django.contrib.auth.models import User, Group
-from rest_framework import viewsets
-from rest_framework import permissions
+from django.http import HttpResponse, JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.parsers import JSONParser
 
-from backend.news.serializers import UserSerializer, GroupSerializer
+from news.models import ArticleModel
+from news.serializers import ArticleSerializer
 
-
-class UserViewSet(viewsets.ModelViewSet):
+@csrf_exempt
+def article_list(request):
     """
-    API endpoint that allows users to be viewed or edited.
+    List all code article
     """
-    queryset = User.objects.all().order_by('-date_joined')
-    serializer_class = UserSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    if request.method == 'GET':
+        snippets = ArticleModel.objects.all()
+        serializer = ArticleSerializer(snippets, many=True)
+        return JsonResponse(serializer.data, safe=False)
+    elif request.method == 'POST':
+        pass
 
+@csrf_exempt
+def snippet_detail(request, pk):
+    """
+    Retrieve, update or delete a code snippet.
+    """
+    try:
+        snippet = ArticleModel.objects.get(pk=pk)
+    except ArticleModel.DoesNotExist:
+        return HttpResponse(status=404)
 
-class GroupViewSet(viewsets.ModelViewSet):
     """
-    API endpoint that allows groups to be viewed or edited.
+    if request.method == 'GET':
+        serializer = SnippetSerializer(snippet)
+        return JsonResponse(serializer.data)
+
+    elif request.method == 'PUT':
+        data = JSONParser().parse(request)
+        serializer = SnippetSerializer(snippet, data=data)
+        if serializer.is_valid():
+            serializer.save()
+            return JsonResponse(serializer.data)
+        return JsonResponse(serializer.errors, status=400)
+
+    elif request.method == 'DELETE':
+        snippet.delete()
+        return HttpResponse(status=204)
     """
-    queryset = Group.objects.all()
-    serializer_class = GroupSerializer
-    permission_classes = [permissions.IsAuthenticated]
