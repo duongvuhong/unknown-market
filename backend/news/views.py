@@ -7,9 +7,9 @@ from .serializer import ArticleSerializer
 
 class ArticleList(APIView):
     """
-    List all snippets, or create a new snippet.
+    List all articles
     """
     def get(self, request, format=None):
-        snippets = ArticleModel.objects.all()
-        serializer = ArticleSerializer(snippets, many=True)
+        articles = ArticleModel.objects.all()
+        serializer = ArticleSerializer(articles, many=True)
         return Response(serializer.data)
