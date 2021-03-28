@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     # my apps
     'news.apps.NewsConfig',
+    'stocks.apps.StocksConfig'
 ]
 
 MIDDLEWARE = [
